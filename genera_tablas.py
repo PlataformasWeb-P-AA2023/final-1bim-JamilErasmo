@@ -10,12 +10,14 @@ engine = create_engine(cadena_base_datos, echo = True)
 Base = declarative_base()
 
 
+#Tiene tres columnas: id, codigoProvincia y nombreProvincia
+#La clase también tiene una relación de uno a muchos con la clase Canton a través del atributo cantones
 
 class Provincia(Base):
     __tablename__ = 'provincia'
     id = Column(Integer, primary_key=True)
     codigoProvincia = Column(Integer, nullable=False)
-    nombreProvincia = Column(String(100))  # Corrección en el nombre del atributo
+    nombreProvincia = Column(String(100)) 
 
     cantones = relationship("Canton", back_populates="provincias")
 
@@ -25,6 +27,7 @@ class Provincia(Base):
                           self.codigoProvincia, 
                           self.nombreProvincia)
 
+#Tiene cuatro columnas: id, codigoCanton, nombreCanton y provincia_id
 class Canton(Base):
     __tablename__ = 'canton'
     id = Column(Integer, primary_key=True)
@@ -41,7 +44,7 @@ class Canton(Base):
         return "id: %d - codigoCanton: %d - nombreCanton: %s - pronvicia_id: %d" % (
                 self.id, self.codigoCanton, self.nombreCanton, self.provincia_id)
     
-class Parroquia(Base):  # Corrección en el nombre de la clase
+class Parroquia(Base):  
     __tablename__ = 'parroquia'
     id = Column(Integer, primary_key=True)
     codigoParroquia = Column(Integer)
@@ -51,7 +54,7 @@ class Parroquia(Base):  # Corrección en el nombre de la clase
 
     cantones = relationship("Canton", back_populates="parroquias")
 
-    instituciones = relationship("Institucion", back_populates="parroquias")  # Corrección en el nombre de la relación
+    instituciones = relationship("Institucion", back_populates="parroquias") 
     
     def __repr__(self):
         return "id: %d - codigoParroquia: %d - nombreParroquia: %s - canton_id: %d" % (
@@ -74,6 +77,6 @@ class Institucion(Base):
 
     parroquia_id = Column(Integer, ForeignKey('parroquia.id'))
 
-    parroquias = relationship("Parroquia", back_populates="instituciones")  # Corrección en el nombre de la relación      
+    parroquias = relationship("Parroquia", back_populates="instituciones")   
 
 Base.metadata.create_all(engine)

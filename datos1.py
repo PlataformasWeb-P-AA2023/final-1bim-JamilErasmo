@@ -1,56 +1,42 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import and_
-
-#Estas clases representan las tablas de una base de datos relacionada con cantones y parroquias.
-from genera_tablas import Provincia, Canton, Parroquia, Institucion
+from sqlalchemy import and_ 
+from genera_tablas import Institucion, Parroquia, Provincia, Canton
 from configuracion import cadena_base_datos
+# se genera enlace al gestor de base de datos para el ejemplo se usa la base de datos sqlite
 
+engine = create_engine(cadena_base_datos)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+establecimiento = session.query(Institucion).all()
 engine = create_engine(cadena_base_datos)
 
 Session = sessionmaker(bind=engine)
 session = Session()
 
-#Todos los establecimientos que pertenecen al Código División Política Administrativa Parroquia con valor 110553
+#recuperamos todos los institucion que pertenecen a la Parroquia con un código de 110553, utilizando una operación de unión (join)
 
-consulta = session.query(Institucion).join(Parroquia).filter(Parroquia.codigoParroquia == 110553).all()
+Institucion = session.query(Institucion).join(Parroquia, Canton, Provincia).filter(Parroquia.codigo == 110553).all()
+print("Todos las instituciones que pertenecen al Código División Política Administrativa Parroquia con valor 110553")
+for e in Institucion:
+    print(e, "\n")
 
-# Establecimientos de la provincia del Oro
-for institucion in consulta:
-    print(institucion.nombre_institucion)
-
-print("-----------------------------------------")
-print("Consulta2\n")
-
-consulta2 = session.query(Institucion).join(Parroquia).join(Canton).join(Provincia).filter(
-    Institucion.parroquia_id == Parroquia.id,
-    Parroquia.canton_id == Canton.id,
-    Canton.provincia_id == Provincia.id,
-    Provincia.nombreProvincia == "EL ORO").all()
+# Establecimientos de la provincia del Oro, el resultado se almacena en la variable establecimientos.
+Institucion = session.query(Institucion).join(Parroquia, Canton, Provincia).filter(Provincia.provincia == 'EL ORO').all()
+print("Todos las instituciones de la provincia del Oro.")
+for e in Institucion:
+    print(e, "\n")
 
 # Establecimientos del cantón de Portovelo.
-for institucion2 in consulta2:
-    print(institucion2.nombre_institucion)
-
-print("-----------------------------------------")
-print("Consulta3\n")
-
-consulta3 = session.query(Institucion).join(Parroquia).join(Canton).filter(
-    Canton.nombreCanton == "PORTOVELO"
-).all()
-
+Institucion = session.query(Institucion).join(Parroquia, Canton).filter(Canton.canton == 'PORTOVELO').all()
+print("Todos las instituciones del cantón de Portovelo.")
+for e in Institucion:
+    print(e, "\n")
 
 # Establecimientos del cantón de Zamora.
-for institucion3 in consulta3:
-    print(institucion3.nombre_institucion)
-
-print("-----------------------------------------")
-print("Consulta4\n")
-
-consulta4 = session.query(Institucion).join(Parroquia).join(Canton).filter(
-    Canton.nombreCanton == "ZAMORA"
-).all()
-
-for institucion4 in consulta4:
-    print(institucion4.nombre_institucion)
+Institucion = session.query(Institucion).join(Parroquia, Canton).filter(Canton.canton == 'ZAMORA').all()
+print("Todos los instituciones del cantón de Zamora.")
+for e in Institucion:
+    print(e, "\n")
 

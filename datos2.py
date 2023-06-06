@@ -12,6 +12,7 @@ Session = sessionmaker(bind=engine)
 session = Session() 
 
 # Las parroquias que tienen establecimientos únicamente en la jornada "Matutina y Vespertina"
+# método query de la sesión y realiza una unión (join) entre las tablas y Se utiliza el método distinct para obtener resultados únicos. 
 
 consulta = session.query(Parroquia).join(Institucion).filter(Institucion.jornada == "Matutina y Vespertina").distinct()
 
